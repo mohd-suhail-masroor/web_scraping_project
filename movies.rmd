@@ -1,0 +1,87 @@
+---
+title: "IDMb top 250 movies"
+author: "mohd suhail masroor"
+date: "`12-11-2022`"
+output: html_document
+---
+
+```{r}
+
+library(tidyverse)
+
+library(rvest)
+
+```
+
+
+
+Creating a connection to a website
+
+```{r}
+link = 'https://www.imdb.com/chart/top/?ref_=nv_mv_250'
+
+page = read_html(link)
+
+```
+
+ Extracting data using css notations and storing them as a vector
+
+```{r}
+
+title <- page %>% 
+         html_nodes('.titleColumn a') %>% 
+         html_text()
+
+head(title)
+    
+year <- page %>% 
+        html_nodes('.secondaryInfo') %>% 
+        html_text()
+
+head(year)
+    
+IMDb_rating <- page %>% 
+               html_nodes('strong') %>% 
+               html_text()
+
+head(IMDb_rating)
+
+
+```
+
+ Creating a data frame from the extracted vectors
+
+```{r}
+
+movies <-  data.frame(title,year,IMDb_rating,stringsAsFactors = FALSE)
+
+head(movies)
+
+```
+
+  Removing brackets from year column
+
+```{r}
+
+movies<-
+  movies %>% 
+  mutate(year,year = str_replace_all(string = year,pattern = '[()]',
+                                     replacement = '')) 
+
+head(movies)
+
+
+```
+
+Exporting the data frame as a csv file in your working directory
+
+```{r}
+
+write_csv(movies,file = 'movies.csv' )
+
+```
+
+
+
+
+
